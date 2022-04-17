@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/earacena/realtime-chat-webapp.git"
+    "url": "git+https://github.com/earacena/realtime-chat-backend.git"
   },
   "author": "Emanuel Aracena Beriguete <earacenadev@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/earacena/realtime-chat-webapp/issues"
+    "url": "https://github.com/earacena/realtime-chat-backend/issues"
   },
-  "homepage": "https://github.com/earacena/realtime-chat-webapp#readme",
+  "homepage": "https://github.com/earacena/realtime-chat-backend#readme",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
