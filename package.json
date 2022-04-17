@@ -1,5 +1,5 @@
 {
-  "name": "realtime-chat-webapp",
+  "name": "realtime-chat-backend",
   "version": "1.0.0",
   "description": "The backend for a realtime chat web application.",
   "private": true,
