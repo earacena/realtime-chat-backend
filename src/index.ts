@@ -13,6 +13,12 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('a user connected: ', socket.id);
 
+  socket.on('message', (message) => {
+    console.log('user [', socket.id, '] sent message: ', message);
+
+    socket.broadcast.emit('message', message);
+  });
+
   socket.on('disconnect', () => {
     console.log('a user disconnected: ', socket.id);
   });
