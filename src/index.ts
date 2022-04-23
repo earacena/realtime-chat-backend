@@ -19,6 +19,8 @@ const ChatMessageType = RtRecord({
 io.on('connection', (socket) => {
   console.log('a user connected: ', socket.id);
 
+  socket.broadcast.emit('new user', socket.id);
+
   socket.on('message', (payload) => {
     try {
       const { timestamp, message } = ChatMessageType.check(JSON.parse(payload));
@@ -27,6 +29,10 @@ io.on('connection', (socket) => {
     } catch (error: unknown) {
       console.error(error);
     }
+  });
+
+  socket.on('private message', (message, senderSocketId) => {
+    socket.to(senderSocketId).emit('private message', message, senderSocketId);
   });
 
   socket.on('disconnect', () => {
