@@ -1,7 +1,7 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
-import { Record as RtRecord, String as RtString } from 'runtypes';
+// import { Record as RtRecord, String as RtString } from 'runtypes';
 
 const app = express();
 const server = http.createServer(app);
@@ -11,35 +11,25 @@ const io = new Server(server, {
   },
 });
 
-const ChatMessageType = RtRecord({
-  timestamp: RtString,
-  message: RtString,
-});
+io.on('connection', async (socket) => {
+  console.log('user connected: ', socket.id);
 
-io.on('connection', (socket) => {
-  console.log('a user connected: ', socket.id);
+  socket.broadcast.emit('user connected', socket.id);
+  const allSockets = await io.fetchSockets();
+  const allSocketIds = allSockets.map((s) => s.id);
+  socket.emit('all connected users', allSocketIds);
 
-  socket.broadcast.emit('new user', socket.id);
-
-  socket.on('message', (payload) => {
-    try {
-      const { timestamp, message } = ChatMessageType.check(JSON.parse(payload));
-      console.log(`user [${socket.id}] sent message [${timestamp}]:  ${message}`);
-      socket.broadcast.emit('message', payload);
-    } catch (error: unknown) {
-      console.error(error);
-    }
-  });
-
-  socket.on('private message', (message, senderSocketId) => {
-    socket.to(senderSocketId).emit('private message', message, senderSocketId);
+  socket.on('message', (userSocketId, message) => {
+    socket.broadcast.emit('message', userSocketId, message);
   });
 
   socket.on('disconnect', () => {
-    console.log('a user disconnected: ', socket.id);
+    // console.log('a user disconnected: ', socket.id);
+
+    socket.emit('user disconnected', socket.id);
   });
 });
 
 server.listen(3001, () => {
-  console.log('listening on *:3001');
+  console.log('socket.io listening on localhost:3001');
 });
