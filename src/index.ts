@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+import { v4 } from 'uuid';
 // import { Record as RtRecord, String as RtString } from 'runtypes';
 
 const app = express();
@@ -21,6 +22,20 @@ io.on('connection', async (socket) => {
 
   socket.on('message', (userSocketId, message) => {
     socket.broadcast.emit('message', userSocketId, message);
+  });
+
+  socket.on('private message', (roomId, message) => {
+    socket.to(roomId).emit('private message', roomId, socket.id, message);
+  });
+
+  socket.on('friend request', (userId) => {
+    const newRoomId: string = v4();
+    socket.to(userId).emit('friend request', socket.id, newRoomId);
+    socket.emit('add room', newRoomId);
+  });
+
+  socket.on('join room', (roomId) => {
+    socket.join(roomId);
   });
 
   socket.on('disconnect', () => {
