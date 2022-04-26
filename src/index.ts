@@ -31,7 +31,7 @@ io.on('connection', async (socket) => {
   socket.on('friend request', (userId) => {
     const newRoomId: string = v4();
     socket.to(userId).emit('friend request', socket.id, newRoomId);
-    socket.emit('add room', newRoomId);
+    socket.emit('add private room', userId, newRoomId);
   });
 
   socket.on('join room', (roomId) => {
