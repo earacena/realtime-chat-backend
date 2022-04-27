@@ -21,25 +21,29 @@ io.on('connection', async (socket) => {
   socket.emit('all connected users', allSocketIds);
 
   socket.on('message', (userSocketId, message) => {
+    console.log(`${socket.id} sent ${userSocketId} message: ${message}`);
     socket.broadcast.emit('message', userSocketId, message);
   });
 
   socket.on('private message', (roomId, message) => {
+    console.log(`${socket.id} sent ${roomId} private message: ${message}`);
     socket.to(roomId).emit('private message', roomId, socket.id, message);
   });
 
   socket.on('friend request', (userId) => {
     const newRoomId: string = v4();
+    console.log(`${socket.id} sent ${userId} friend request, new room is: ${newRoomId}`);
     socket.to(userId).emit('friend request', socket.id, newRoomId);
     socket.emit('add private room', userId, newRoomId);
   });
 
   socket.on('join room', (roomId) => {
+    console.log(`${socket.id} is joining room ${roomId}`);
     socket.join(roomId);
   });
 
   socket.on('disconnect', () => {
-    // console.log('a user disconnected: ', socket.id);
+    console.log(`user disconnected ${socket.id}`);
 
     socket.emit('user disconnected', socket.id);
   });
