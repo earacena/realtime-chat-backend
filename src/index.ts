@@ -20,21 +20,18 @@ io.on('connection', async (socket) => {
   const allSocketIds = allSockets.map((s) => s.id);
   socket.emit('all connected users', allSocketIds);
 
-  socket.on('message', (userSocketId, message) => {
-    console.log(`${socket.id} sent ${userSocketId} message: ${message}`);
-    socket.broadcast.emit('message', userSocketId, message);
+  socket.on('message', (roomId, message) => {
+    console.log(`${socket.id} sent room ${roomId} message: ${message}`);
+    socket.to(roomId).emit('message', socket.id, roomId, message);
   });
 
-  socket.on('private message', (roomId, message) => {
-    console.log(`${socket.id} sent ${roomId} private message: ${message}`);
-    socket.to(roomId).emit('private message', roomId, socket.id, message);
-  });
-
-  socket.on('friend request', (userId) => {
+  socket.on('private room request', (userId) => {
     const newRoomId: string = v4();
-    console.log(`${socket.id} sent ${userId} friend request, new room is: ${newRoomId}`);
-    socket.to(userId).emit('friend request', socket.id, newRoomId);
-    socket.emit('add private room', userId, newRoomId);
+    console.log(`${socket.id} sent ${userId} room request, new room is: ${newRoomId}`);
+
+    socket.to(userId).emit('private room request', socket.id, newRoomId);
+    // Send the same request to request in order to create room
+    socket.emit('private room request', userId, newRoomId);
   });
 
   socket.on('join room', (roomId) => {
