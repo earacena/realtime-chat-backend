@@ -20,9 +20,9 @@ io.on('connection', async (socket) => {
   const allSocketIds = allSockets.map((s) => s.id);
   socket.emit('all connected users', allSocketIds);
 
-  socket.on('message', (roomId, message) => {
-    console.log(`${socket.id} sent room ${roomId} message: ${message}`);
-    socket.to(roomId).emit('message', socket.id, roomId, message);
+  socket.on('send message', (message) => {
+    console.log(`${socket.id} sent room ${message.roomId} message: ${message}`);
+    socket.to(message.roomId).emit('receive message', message);
   });
 
   socket.on('private room request', (userId) => {
