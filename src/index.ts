@@ -15,23 +15,37 @@ const io = new Server(server, {
 io.on('connection', async (socket) => {
   console.log('user connected: ', socket.id);
 
-  socket.broadcast.emit('user connected', socket.id);
+  const userConnectedPayloadJSON: string = JSON.stringify({ userSocketId: socket.id });
+  socket.broadcast.emit('user connected', userConnectedPayloadJSON);
+
   const allSockets = await io.fetchSockets();
   const allSocketIds = allSockets.map((s) => s.id);
-  socket.emit('all connected users', allSocketIds);
+  const allConnectedUsersPayloadJSON: string = JSON.stringify({ allUserSocketIds: allSocketIds });
+  socket.emit('all connected users', allConnectedUsersPayloadJSON);
 
   socket.on('send message', (message) => {
     console.log(`${socket.id} sent room ${message.roomId} message: ${message}`);
-    socket.to(message.roomId).emit('receive message', message);
+
+    const messagePayloadJSON: string = JSON.stringify({ message });
+    socket.to(message.roomId).emit('receive message', messagePayloadJSON);
   });
 
   socket.on('private room request', (userId) => {
     const newRoomId: string = v4();
     console.log(`${socket.id} sent ${userId} room request, new room is: ${newRoomId}`);
 
-    socket.to(userId).emit('private room request', socket.id, newRoomId);
+    let privateRoomRequestPayloadJSON: string = JSON.stringify({
+      userSocketId: socket.id,
+      roomId: newRoomId,
+    });
+    socket.to(userId).emit('private room request', privateRoomRequestPayloadJSON);
+
     // Send the same request to request in order to create room
-    socket.emit('private room request', userId, newRoomId);
+    privateRoomRequestPayloadJSON = JSON.stringify({
+      userSocketId: userId,
+      roomId: newRoomId,
+    });
+    socket.emit('private room request', privateRoomRequestPayloadJSON);
   });
 
   socket.on('join room', (roomId) => {
@@ -42,7 +56,8 @@ io.on('connection', async (socket) => {
   socket.on('disconnect', () => {
     console.log(`user disconnected ${socket.id}`);
 
-    socket.broadcast.emit('user disconnected', socket.id);
+    const userDisconnectedPayloadJSON: string = JSON.stringify({ userSocketId: socket.id });
+    socket.broadcast.emit('user disconnected', userDisconnectedPayloadJSON);
   });
 });
 
