@@ -1,5 +1,6 @@
 import express from 'express';
 import http from 'http';
+import { String as RtString, Record as RtRecord } from 'runtypes';
 import { Server } from 'socket.io';
 import { v4 } from 'uuid';
 // import { Record as RtRecord, String as RtString } from 'runtypes';
@@ -48,7 +49,9 @@ io.on('connection', async (socket) => {
     socket.emit('private room request', privateRoomRequestPayloadJSON);
   });
 
-  socket.on('join room', (roomId) => {
+  socket.on('join room', (payloadJSON: unknown) => {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { roomId } = RtRecord({ roomId: RtString }).check(payload);
     console.log(`${socket.id} is joining room ${roomId}`);
     socket.join(roomId);
   });
