@@ -3,7 +3,7 @@ import http from 'http';
 import { String as RtString, Record as RtRecord } from 'runtypes';
 import { Server } from 'socket.io';
 import { v4 } from 'uuid';
-// import { Record as RtRecord, String as RtString } from 'runtypes';
+import chatEvent from './chatEvents.types';
 
 const app = express();
 const server = http.createServer(app);
@@ -24,14 +24,18 @@ io.on('connection', async (socket) => {
   const allConnectedUsersPayloadJSON: string = JSON.stringify({ allUserSocketIds: allSocketIds });
   socket.emit('all connected users', allConnectedUsersPayloadJSON);
 
-  socket.on('send message', (message) => {
+  const sendMessageHandler = (payloadJSON: unknown) => {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { message } = chatEvent.MessagePayload.check(payload);
     console.log(`${socket.id} sent room ${message.roomId} message: ${message}`);
 
     const messagePayloadJSON: string = JSON.stringify({ message });
     socket.to(message.roomId).emit('receive message', messagePayloadJSON);
-  });
+  };
 
-  socket.on('private room request', (userId) => {
+  const privateRoomRequestHandler = (payloadJSON: unknown) => {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { userId } = chatEvent.PrivateRoomRequestPayload.check(payload);
     const newRoomId: string = v4();
     console.log(`${socket.id} sent ${userId} room request, new room is: ${newRoomId}`);
 
@@ -47,21 +51,26 @@ io.on('connection', async (socket) => {
       roomId: newRoomId,
     });
     socket.emit('private room request', privateRoomRequestPayloadJSON);
-  });
+  };
 
-  socket.on('join room', (payloadJSON: unknown) => {
+  const joinRoomHandler = (payloadJSON: unknown) => {
     const payload: unknown = JSON.parse(RtString.check(payloadJSON));
     const { roomId } = RtRecord({ roomId: RtString }).check(payload);
     console.log(`${socket.id} is joining room ${roomId}`);
     socket.join(roomId);
-  });
+  };
 
-  socket.on('disconnect', () => {
+  const disconnectHandler = () => {
     console.log(`user disconnected ${socket.id}`);
 
     const userDisconnectedPayloadJSON: string = JSON.stringify({ userSocketId: socket.id });
     socket.broadcast.emit('user disconnected', userDisconnectedPayloadJSON);
-  });
+  };
+
+  socket.on('send message', sendMessageHandler);
+  socket.on('private room request', privateRoomRequestHandler);
+  socket.on('join room', joinRoomHandler);
+  socket.on('disconnect', disconnectHandler);
 });
 
 const main = () => {
