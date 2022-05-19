@@ -4,6 +4,7 @@ import { String as RtString, Record as RtRecord } from 'runtypes';
 import { Server } from 'socket.io';
 import { v4 } from 'uuid';
 import chatEvent from './chatEvents.types';
+import Message from './api/message/message.model';
 
 const app = express();
 const server = http.createServer(app);
@@ -24,12 +25,28 @@ io.on('connection', async (socket) => {
   const allConnectedUsersPayloadJSON: string = JSON.stringify({ allUserSocketIds: allSocketIds });
   socket.emit('all connected users', allConnectedUsersPayloadJSON);
 
-  const sendMessageHandler = (payloadJSON: unknown) => {
+  const receiveAllRoomMessagesHandler = async (payloadJSON: unknown) => {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { roomId } = chatEvent.ReceiveAllRoomMessagesPayload.check(payload);
+    const messages = await Message.findAll({ where: { roomId } });
+
+    const messagesPayloadJSON: string = JSON.stringify({ messages });
+    socket.emit('receive all room messages', messagesPayloadJSON);
+  };
+
+  const sendMessageHandler = async (payloadJSON: unknown) => {
     const payload: unknown = JSON.parse(RtString.check(payloadJSON));
     const { message } = chatEvent.MessagePayload.check(payload);
     console.log(`${socket.id} sent room ${message.roomId} message: ${message}`);
 
-    const messagePayloadJSON: string = JSON.stringify({ message });
+    // Store message in DB
+    const newMessage = await Message.create({
+      senderId: message.senderId,
+      roomId: message.roomId,
+      content: message.content,
+    });
+
+    const messagePayloadJSON: string = JSON.stringify({ newMessage });
     socket.to(message.roomId).emit('receive message', messagePayloadJSON);
   };
 
@@ -67,6 +84,7 @@ io.on('connection', async (socket) => {
     socket.broadcast.emit('user disconnected', userDisconnectedPayloadJSON);
   };
 
+  socket.on('receive all room messages', receiveAllRoomMessagesHandler);
   socket.on('send message', sendMessageHandler);
   socket.on('private room request', privateRoomRequestHandler);
   socket.on('join room', joinRoomHandler);
