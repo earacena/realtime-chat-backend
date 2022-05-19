@@ -19,6 +19,7 @@ Message.init({
   },
 }, {
   sequelize,
+  timestamps: false,
   underscored: true,
   modelName: 'message',
 });
