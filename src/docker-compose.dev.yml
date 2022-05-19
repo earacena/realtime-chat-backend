@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:latest
     ports:
-      -3002:5432
+      - 3003:5432
     restart: always
     environment:
       POSTGRES_USER: pguser
