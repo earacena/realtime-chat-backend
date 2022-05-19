@@ -37,6 +37,7 @@
     "dotenv": "^16.0.1",
     "express": "^4.17.3",
     "helmet": "^5.0.2",
+    "pg": "^8.7.3",
     "runtypes": "^6.5.1",
     "sequelize": "^6.19.0",
     "socket.io": "^4.4.1",
