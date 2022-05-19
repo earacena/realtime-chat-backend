@@ -34,6 +34,10 @@ const PrivateRoomRequestPayload = RtRecord({
   userId: RtString,
 });
 
+const ReceiveAllRoomMessagesPayload = RtRecord({
+  roomId: RtString,
+});
+
 const chatEventType = {
   UserConnectedEventPayload,
   UserDisconnectedEventPayload,
@@ -41,6 +45,7 @@ const chatEventType = {
   MessagePayload,
   MessagesPayload,
   PrivateRoomRequestPayload,
+  ReceiveAllRoomMessagesPayload,
 };
 
 export default chatEventType;
