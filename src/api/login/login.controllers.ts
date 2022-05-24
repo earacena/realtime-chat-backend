@@ -5,10 +5,11 @@ import { String as RtString } from 'runtypes';
 import User from '../user/user.model';
 import { User as UserType } from '../user/user.types';
 import { SECRET_JWT_KEY } from '../../config';
+import LoginRequest from './login.types';
 
 const loginController = async (req: Request, res: Response) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = LoginRequest.check(req.body);
     const user = UserType.check(await User.findOne({ where: { username } }));
 
     const isPasswordCorrect = await bcrypt.compare(
