@@ -11,4 +11,4 @@ services:
       POSTGRES_PASSWORD: pgpass
       POSTGRES_DB: pgdb
     volumes:
-      - ./src/config/postgres/dev.sql:/docker-entrypoint-initdb.d/dev.sql
+      - ./src/config/schemas/dev.sql:/docker-entrypoint-initdb.d/dev.sql
