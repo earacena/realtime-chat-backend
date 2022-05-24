@@ -5,8 +5,13 @@ import { Server } from 'socket.io';
 import { v4 } from 'uuid';
 import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
+import usersRouter from './api/user/user.routes';
 
 const app = express();
+
+app.use(express.json());
+app.use('/api/users', usersRouter);
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
