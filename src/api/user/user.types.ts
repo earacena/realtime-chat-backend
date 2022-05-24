@@ -20,7 +20,7 @@ export const User = RtRecord({
   ),
 });
 
-export const UserPostRequest = RtRecord({
+export const createUserRequest = RtRecord({
   name: RtString,
   username: RtString,
   password: RtString,
