@@ -8,13 +8,20 @@ import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
 import usersRouter from './api/user/user.routes';
 import loginRouter from './api/login/login.routes';
+import errorHandler from './middleware';
 
 const app = express();
 
+// Pre-route middleware
 app.use(cors());
 app.use(express.json());
+
+// Routes
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
+
+// Post-router middleware
+app.use(errorHandler);
 
 const server = http.createServer(app);
 const io = new Server(server, {
