@@ -7,12 +7,14 @@ import cors from 'cors';
 import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
 import usersRouter from './api/user/user.routes';
+import loginRouter from './api/login/login.routes';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter);
 
 const server = http.createServer(app);
 const io = new Server(server, {
