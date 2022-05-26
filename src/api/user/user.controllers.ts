@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import User from './user.model';
 import { createUserRequest, User as UserType } from './user.types';
 
-const createUserController = async (req: Request, res: Response) => {
+const createUserController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, username, password } = createUserRequest.check(req.body);
     const passwordHash = await bcrypt.hash(password, 10);
@@ -17,7 +17,7 @@ const createUserController = async (req: Request, res: Response) => {
 
     res.status(201).json(newUser);
   } catch (error: unknown) {
-    console.log(error);
+    next(error);
   }
 };
 
