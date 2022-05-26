@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import { sign as JwtSign } from 'jsonwebtoken';
 import { String as RtString } from 'runtypes';
@@ -7,7 +7,7 @@ import { User as UserType } from '../user/user.types';
 import { SECRET_JWT_KEY } from '../../config';
 import LoginRequest from './login.types';
 
-const loginController = async (req: Request, res: Response) => {
+const loginController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { username, password } = LoginRequest.check(req.body);
     const user = UserType.check(await User.findOne({ where: { username } }));
@@ -42,7 +42,7 @@ const loginController = async (req: Request, res: Response) => {
       });
     return;
   } catch (error: unknown) {
-    console.log(error);
+    next(error);
   }
 };
 
