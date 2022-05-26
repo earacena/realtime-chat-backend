@@ -3,12 +3,14 @@ import http from 'http';
 import { String as RtString, Record as RtRecord } from 'runtypes';
 import { Server } from 'socket.io';
 import { v4 } from 'uuid';
+import cors from 'cors';
 import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
 import usersRouter from './api/user/user.routes';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use('/api/users', usersRouter);
 
