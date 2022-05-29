@@ -4,11 +4,13 @@ import { String as RtString, Record as RtRecord } from 'runtypes';
 import { Server } from 'socket.io';
 import { v4 } from 'uuid';
 import cors from 'cors';
+import { verify as JwtVerify } from 'jsonwebtoken';
 import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
 import usersRouter from './api/user/user.routes';
 import loginRouter from './api/login/login.routes';
 import errorHandler from './middleware';
+import { SECRET_JWT_KEY } from './config';
 
 const app = express();
 
@@ -28,6 +30,16 @@ const io = new Server(server, {
   cors: {
     origin: 'http://localhost.localdomain:3000',
   },
+});
+
+io.use((socket, next) => {
+  try {
+    const { token } = RtRecord({ token: RtString }).check(socket.handshake.auth);
+    JwtVerify(token, SECRET_JWT_KEY);
+    next();
+  } catch (error) {
+    next(new Error('not authorized'));
+  }
 });
 
 io.on('connection', async (socket) => {
