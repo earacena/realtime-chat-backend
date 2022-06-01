@@ -20,6 +20,17 @@ CREATE TABLE rooms (
   room_name TEXT NOT NULL
 );
 
+CREATE TYPE request_type AS ENUM ('contact');
+CREATE TYPE request_status AS ENUM ('pending', 'accepted');
+CREATE TABLE requests (
+  id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  type request_type NOT NULL,
+  from_user INTEGER NOT NULL,
+  to_user INTEGER NOT NULL,
+  status request_status NOT NULL
+);
+
 select * from users;
 select * from messages;
 select * from rooms;
+select * from requests;
