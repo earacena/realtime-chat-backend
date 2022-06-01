@@ -8,20 +8,21 @@ Request.init({
     primaryKey: true,
     autoIncrement: true,
   },
-  requestType: {
+  type: {
     type: DataTypes.ENUM('contact'),
     allowNull: false,
   },
-  requestFromUser: {
+  fromUser: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  requestToUser: {
+  toUser: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  requestStatus: {
+  status: {
     type: DataTypes.ENUM('pending', 'accepted'),
+    allowNull: false,
   },
 }, {
   sequelize,
