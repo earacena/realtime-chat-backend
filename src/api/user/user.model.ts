@@ -24,6 +24,9 @@ User.init({
   passwordHash: {
     type: DataTypes.TEXT,
   },
+  contacts: {
+    type: DataTypes.ARRAY(DataTypes.INTEGER),
+  },
 }, {
   sequelize,
   underscored: true,
