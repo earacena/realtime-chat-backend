@@ -16,7 +16,7 @@ export const User = RtRecord({
   passwordHash: RtString,
   dateRegistered: RtUnion(
     RtInstanceOf(Date),
-    RtString.withConstraint((x: string) => (x || x !== null || typeof x === 'string' || !Number.isNaN(Date.parse(x)))),
+    RtString.withConstraint((x: string) => (x && x !== null && typeof x === 'string' && !Number.isNaN(Date.parse(x)))),
   ),
 });
 
