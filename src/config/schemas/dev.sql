@@ -25,6 +25,7 @@ CREATE TYPE request_status AS ENUM ('pending', 'accepted');
 CREATE TABLE requests (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   type request_type NOT NULL,
+  date_requested TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   from_user INTEGER NOT NULL,
   to_user INTEGER NOT NULL,
   status request_status NOT NULL
