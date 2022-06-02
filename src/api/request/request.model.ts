@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Sequelize } from 'sequelize';
 import { sequelize } from '../../utils/db';
 
 class Request extends Model {}
@@ -11,6 +11,10 @@ Request.init({
   type: {
     type: DataTypes.ENUM('contact'),
     allowNull: false,
+  },
+  dateRequested: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
   },
   fromUser: {
     type: DataTypes.INTEGER,
