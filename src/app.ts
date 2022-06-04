@@ -11,6 +11,7 @@ import usersRouter from './api/user/user.routes';
 import loginRouter from './api/login/login.routes';
 import errorHandler from './middleware';
 import { SECRET_JWT_KEY } from './config';
+import requestRouter from './api/request/request.routes';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 // Routes
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/requests', requestRouter);
 
 // Post-router middleware
 app.use(errorHandler);
