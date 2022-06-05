@@ -1,18 +1,30 @@
 import { Server, Socket } from 'socket.io';
-import { String as RtString, Record as RtRecord } from 'runtypes';
+import { Number as RtNumber, String as RtString, Record as RtRecord } from 'runtypes';
 import { v4 } from 'uuid';
 import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
+import { verify as JwtVerify } from 'jsonwebtoken';
+import { SECRET_JWT_KEY } from './config';
+
+const Users = new Map();
 
 class Connection {
   socket: Socket;
 
   ioListener: Server;
 
+  userId: number;
+
   constructor(ioListener: Server, socket: Socket) {
     this.socket = socket;
-
     this.ioListener = ioListener;
+    const { token } = RtRecord({ token: RtString }).check(this.socket.handshake.auth);
+    const decoded = RtRecord({
+      id: RtNumber,
+      username: RtString,
+    }).check(JwtVerify(token, SECRET_JWT_KEY));
+    this.userId = decoded.id;
+    Users.set(this.userId, this.socket.id);
 
     console.log('user connected: ', socket.id);
 
@@ -87,6 +99,8 @@ class Connection {
 
   disconnect() {
     console.log(`user disconnected ${this.socket.id}`);
+
+    Users.delete(this.userId);
 
     const userDisconnectedPayloadJSON: string = JSON.stringify({ userSocketId: this.socket.id });
     this.socket.broadcast.emit('user disconnected', userDisconnectedPayloadJSON);
