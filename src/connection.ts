@@ -1,9 +1,9 @@
 import { Server, Socket } from 'socket.io';
 import { Number as RtNumber, String as RtString, Record as RtRecord } from 'runtypes';
 import { v4 } from 'uuid';
+import { verify as JwtVerify } from 'jsonwebtoken';
 import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
-import { verify as JwtVerify } from 'jsonwebtoken';
 import { SECRET_JWT_KEY } from './config';
 
 const Users = new Map();
