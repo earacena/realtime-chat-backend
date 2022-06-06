@@ -4,8 +4,12 @@ import {
   Record as RtRecord,
 } from 'runtypes';
 
-export default RtRecord({
+export const CreateRequestBody = RtRecord({
   type: RtString,
   toUser: RtNumber,
   fromUser: RtNumber,
+});
+
+export const GetPendingRequestsParam = RtRecord({
+  id: RtString,
 });
