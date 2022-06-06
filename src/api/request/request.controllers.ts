@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import RequestModel from './request.model';
-import CreateRequestBody from './request.types';
+import { CreateRequestBody, GetPendingRequestsParam } from './request.types';
 
 const createRequestController = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -22,6 +22,20 @@ const createRequestController = async (req: Request, res: Response, next: NextFu
   }
 };
 
+const getPendingRequestsForUserId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = GetPendingRequestsParam.check({ id: req.params['id'] });
+    const requests = RequestModel.findAll({ where: { toUser: id } });
+
+    res
+      .status(200)
+      .json(requests);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
 export default {
   createRequestController,
+  getPendingRequestsForUserId,
 };
