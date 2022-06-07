@@ -26,6 +26,7 @@ Request.init({
   },
   status: {
     type: DataTypes.ENUM('pending', 'accepted'),
+    defaultValue: 'pending',
     allowNull: false,
   },
 }, {
