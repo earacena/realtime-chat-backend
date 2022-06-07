@@ -1,16 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import RequestModel from './request.model';
-import { CreateRequestBody, GetPendingRequestsParam } from './request.types';
+import User from '../user/user.model';
+import { User as UserType } from '../user/user.types';
+import { CreateRequestBody, GetPendingRequestsParam, Request as RequestType } from './request.types';
 
 const createRequestController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { type, toUser, fromUser } = CreateRequestBody.check(req.body);
+    const { type, toUser, fromUserId } = CreateRequestBody.check(req.body);
 
-    const newRequest = await RequestModel.create({
-      type,
-      toUser,
-      fromUser,
-    });
+    const user = UserType.check(await User.findOne({ where: { username: toUser } }));
+
+    const newRequest = RequestType.check(
+      await RequestModel.create({
+        type,
+        toUser: user.id,
+        fromUser: fromUserId,
+      }),
+    );
 
     res
       .status(201)
