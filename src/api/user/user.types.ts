@@ -29,3 +29,7 @@ export const createUserRequest = RtRecord({
 export const UserArray = RtArray(User);
 export type Users = RtStatic<typeof UserArray>;
 export const RtValidationError = RtInstanceOf(ValidationError);
+
+export const IdParam = RtRecord({
+  id: RtString,
+});
