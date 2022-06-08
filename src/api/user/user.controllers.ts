@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import User from './user.model';
-import { createUserRequest, User as UserType } from './user.types';
+import { createUserRequest, User as UserType, IdParam } from './user.types';
 
 const createUserController = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -21,6 +21,26 @@ const createUserController = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+const getUserDetailsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = IdParam.check({ id: req.params['id'] });
+    const user = UserType.check(await User.findByPk(id));
+
+    const userDetails = {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+    };
+
+    res
+      .status(200)
+      .json(userDetails);
+  } catch (error: unknown) {
+    next(error);
+  }
+}
+
 export default {
   createUserController,
+  getUserDetailsController,
 };
