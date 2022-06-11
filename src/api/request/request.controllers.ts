@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { String as RtString } from 'runtypes';
 import RequestModel from './request.model';
 import User from '../user/user.model';
 import { User as UserType } from '../user/user.types';
@@ -41,7 +42,28 @@ const getPendingRequestsForUserId = async (req: Request, res: Response, next: Ne
   }
 };
 
+const updateRequestController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = RtString.check(req.params['id']);
+    const request = RequestType.check(req.body);
+
+    const results = await RequestModel.update(
+      { ...request },
+      { where: { id }, returning: true },
+    );
+
+    const updatedRequest = RequestType.check(results[1][0]);
+
+    res
+      .status(200)
+      .json(updatedRequest);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
 export default {
   createRequestController,
   getPendingRequestsForUserId,
+  updateRequestController,
 };
