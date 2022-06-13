@@ -97,6 +97,14 @@ class Connection {
     this.socket.join(roomId);
   }
 
+  sendRequestRefresh(payloadJSON: unknown) {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { username } = RtRecord({ username: RtString }).check(payload);
+    const id = Users.get(username);
+    console.log(`Signaling ${username} (${id}) for pending requests `);
+    this.socket.emit('request refresh');
+  }
+
   disconnect() {
     console.log(`user disconnected ${this.socket.id}`);
 
