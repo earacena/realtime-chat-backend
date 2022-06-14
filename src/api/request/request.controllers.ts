@@ -46,9 +46,9 @@ const updateRequestController = async (req: Request, res: Response, next: NextFu
   try {
     const id = RtString.check(req.params['id']);
     const request = RequestType.check(req.body);
-
+    const { status } = request;
     const results = await RequestModel.update(
-      { ...request },
+      { status },
       { where: { id }, returning: true },
     );
 
