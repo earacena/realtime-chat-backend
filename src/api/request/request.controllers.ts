@@ -32,7 +32,7 @@ const createRequestController = async (req: Request, res: Response, next: NextFu
 const getPendingRequestsForUserId = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = GetPendingRequestsParam.check({ id: req.params['id'] });
-    const requests = await RequestModel.findAll({ where: { toUser: id } });
+    const requests = await RequestModel.findAll({ where: { toUser: id, status: 'pending' } });
 
     res
       .status(200)
