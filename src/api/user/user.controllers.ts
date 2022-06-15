@@ -38,7 +38,7 @@ const getUserDetailsController = async (req: Request, res: Response, next: NextF
   } catch (error: unknown) {
     next(error);
   }
-}
+};
 
 export default {
   createUserController,
