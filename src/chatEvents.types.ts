@@ -31,7 +31,7 @@ const MessagesPayload = RtRecord({
 });
 
 const PrivateRoomRequestPayload = RtRecord({
-  userId: RtString,
+  userSocketId: RtString,
 });
 
 const ReceiveAllRoomMessagesPayload = RtRecord({
