@@ -18,6 +18,7 @@ export const User = RtRecord({
     RtInstanceOf(Date),
     RtString.withConstraint((x: string) => (x && x !== null && typeof x === 'string' && !Number.isNaN(Date.parse(x)))),
   ),
+  contacts: RtArray(RtNumber),
 });
 
 export const createUserRequest = RtRecord({
@@ -32,4 +33,8 @@ export const RtValidationError = RtInstanceOf(ValidationError);
 
 export const IdParam = RtRecord({
   id: RtString,
+});
+
+export const AddContactRequest = RtRecord({
+  contactId: RtNumber,
 });
