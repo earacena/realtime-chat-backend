@@ -72,19 +72,20 @@ class Connection {
 
   privateRoomRequest(payloadJSON: unknown) {
     const payload: unknown = JSON.parse(RtString.check(payloadJSON));
-    const { userId } = chatEvent.PrivateRoomRequestPayload.check(payload);
+    const { userSocketId } = chatEvent.PrivateRoomRequestPayload.check(payload);
     const newRoomId: string = v4();
-    console.log(`${this.socket.id} sent ${userId} room request, new room is: ${newRoomId}`);
+
+    console.log(`${this.socket.id} sent ${userSocketId} room request, new room is: ${newRoomId}`);
 
     let privateRoomRequestPayloadJSON: string = JSON.stringify({
       userSocketId: this.socket.id,
       roomId: newRoomId,
     });
-    this.socket.to(userId).emit('private room request', privateRoomRequestPayloadJSON);
+    this.socket.to(userSocketId).emit('private room request', privateRoomRequestPayloadJSON);
 
     // Send the same request to request in order to create room
     privateRoomRequestPayloadJSON = JSON.stringify({
-      userSocketId: userId,
+      userSocketId,
       roomId: newRoomId,
     });
     this.socket.emit('private room request', privateRoomRequestPayloadJSON);
