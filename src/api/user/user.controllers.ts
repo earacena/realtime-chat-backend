@@ -1,9 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import User from './user.model';
-import { createUserRequest, User as UserType, IdParam, AddContactRequest } from './user.types';
+import {
+  createUserRequest,
+  User as UserType,
+  IdParam,
+  AddContactRequest,
+} from './user.types';
 
-const createUserController = async (req: Request, res: Response, next: NextFunction) => {
+const createUserController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { name, username, password } = createUserRequest.check(req.body);
     const passwordHash = await bcrypt.hash(password, 10);
@@ -12,7 +21,7 @@ const createUserController = async (req: Request, res: Response, next: NextFunct
         name,
         username,
         passwordHash,
-      }),
+      })
     );
 
     res.status(201).json(newUser);
@@ -21,7 +30,11 @@ const createUserController = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-const getUserDetailsController = async (req: Request, res: Response, next: NextFunction) => {
+const getUserDetailsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = IdParam.check({ id: req.params['id'] });
     const user = UserType.check(await User.findByPk(id));
@@ -32,15 +45,17 @@ const getUserDetailsController = async (req: Request, res: Response, next: NextF
       username: user.username,
     };
 
-    res
-      .status(200)
-      .json(userDetails);
+    res.status(200).json(userDetails);
   } catch (error: unknown) {
     next(error);
   }
 };
 
-const addContactController = async (req: Request, res: Response, next: NextFunction) => {
+const addContactController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = IdParam.check({ id: req.params['id'] });
     const user = UserType.check(await User.findByPk(id));
@@ -54,7 +69,8 @@ const addContactController = async (req: Request, res: Response, next: NextFunct
       );
 
       const updatedUser = UserType.check(results[1][0]);
-      res.status(204);
+      res.status(200).json(updatedUser);
+
       return;
     }
 
