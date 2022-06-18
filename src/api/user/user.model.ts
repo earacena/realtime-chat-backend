@@ -26,6 +26,7 @@ User.init({
   },
   contacts: {
     type: DataTypes.ARRAY(DataTypes.INTEGER),
+    defaultValue: [],
   },
 }, {
   sequelize,
