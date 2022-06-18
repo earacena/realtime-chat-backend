@@ -21,7 +21,7 @@ const createUserController = async (
         name,
         username,
         passwordHash,
-      })
+      }),
     );
 
     res.status(201).json(newUser);
@@ -80,8 +80,23 @@ const addContactController = async (
   }
 };
 
+const getContactsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = IdParam.check({ id: req.params['id'] });
+    const user = UserType.check(await User.findByPk(id));
+    res.status(200).json({ contacts: user.contacts });
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
 export default {
   createUserController,
   getUserDetailsController,
   addContactController,
+  getContactsController,
 };
