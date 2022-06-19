@@ -5,7 +5,7 @@ CREATE TABLE users (
   name TEXT,
   password_hash TEXT,
   date_registered TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  contacts integer[]
+  contacts integer[] DEFAULT '{}'
 );
 
 CREATE TABLE messages (
