@@ -13,7 +13,7 @@ class Connection {
 
   ioListener: Server;
 
-  userId: number;
+  username: string;
 
   constructor(ioListener: Server, socket: Socket) {
     this.socket = socket;
@@ -23,8 +23,8 @@ class Connection {
       id: RtNumber,
       username: RtString,
     }).check(JwtVerify(token, SECRET_JWT_KEY));
-    this.userId = decoded.id;
-    Users.set(this.userId, this.socket.id);
+    this.username = decoded.username;
+    Users.set(this.username, this.socket.id);
 
     console.log('user connected: ', socket.id);
 
@@ -42,6 +42,7 @@ class Connection {
     socket.on('send message', (payloadJSON: unknown) => this.sendMessage(payloadJSON));
     socket.on('private room request', (payloadJSON: unknown) => this.privateRoomRequest(payloadJSON));
     socket.on('join room', (payloadJSON: unknown) => this.joinRoom(payloadJSON));
+    socket.on('request refresh', (payloadJSON: unknown) => this.sendRequestRefresh(payloadJSON));
     socket.on('disconnect', () => this.disconnect());
   }
 
@@ -103,13 +104,13 @@ class Connection {
     const { username } = RtRecord({ username: RtString }).check(payload);
     const id = Users.get(username);
     console.log(`Signaling ${username} (${id}) for pending requests `);
-    this.socket.emit('request refresh');
+    this.socket.to(id).emit('request refresh');
   }
 
   disconnect() {
     console.log(`user disconnected ${this.socket.id}`);
 
-    Users.delete(this.userId);
+    Users.delete(this.username);
 
     const userDisconnectedPayloadJSON: string = JSON.stringify({ userSocketId: this.socket.id });
     this.socket.broadcast.emit('user disconnected', userDisconnectedPayloadJSON);
