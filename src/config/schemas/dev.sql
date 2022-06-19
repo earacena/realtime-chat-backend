@@ -21,7 +21,7 @@ CREATE TABLE rooms (
 );
 
 CREATE TYPE request_type AS ENUM ('contact');
-CREATE TYPE request_status AS ENUM ('pending', 'accepted');
+CREATE TYPE request_status AS ENUM ('pending', 'accepted', 'rejected');
 CREATE TABLE requests (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   type request_type NOT NULL,
