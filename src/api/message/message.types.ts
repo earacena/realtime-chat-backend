@@ -5,13 +5,14 @@ import {
 } from 'runtypes';
 
 export const MessageType = RtRecord({
-  roomId: RtString,
-  senderId: RtString,
+  recipientUsername: RtString,
+  senderUsername: RtString,
   content: RtString,
 });
 
 export const MessageArray = RtArray(MessageType);
 
-export const RoomIdRequestParam = RtRecord({
-  id: RtString,
+export const SenderRecipientBody = RtRecord({
+  senderUsername: RtString,
+  recipientUsername: RtString,
 });
