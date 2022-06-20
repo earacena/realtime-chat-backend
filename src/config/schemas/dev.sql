@@ -10,8 +10,8 @@ CREATE TABLE users (
 
 CREATE TABLE messages (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  sender_name TEXT NOT NULL,
-  room_id TEXT NOT NULL,
+  sender_username TEXT NOT NULL,
+  recipient_username TEXT NOT NULL,
   content TEXT NOT NULL
 );
 
