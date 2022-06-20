@@ -8,10 +8,10 @@ Message.init({
     primaryKey: true,
     autoIncrement: true,
   },
-  senderId: {
-    type: DataTypes.INTEGER,
+  senderUsername: {
+    type: DataTypes.TEXT,
   },
-  roomId: {
+  recipientUsername: {
     type: DataTypes.TEXT,
   },
   content: {
