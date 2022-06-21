@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { MessageArray, SenderRecipientBody } from './message.types';
+import { MessageArray, SenderRecipientParams } from './message.types';
 import Message from './message.model';
 
 const getMessagesBySenderRecipientController = async (
@@ -8,9 +8,7 @@ const getMessagesBySenderRecipientController = async (
   next: NextFunction,
 ) => {
   try {
-    const { senderUsername, recipientUsername } = SenderRecipientBody.check(
-      req.body,
-    );
+    const { senderUsername, recipientUsername } = SenderRecipientParams.check(req.query);
 
     // Get messages between two users
     const senderMessages = MessageArray.check(
