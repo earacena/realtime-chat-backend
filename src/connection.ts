@@ -58,17 +58,17 @@ class Connection {
   async sendMessage(payloadJSON: unknown) {
     const payload: unknown = JSON.parse(RtString.check(payloadJSON));
     const { message } = chatEvent.MessagePayload.check(payload);
-    console.log(`${this.socket.id} sent room ${message.roomId} message: ${message}`);
+    console.log(`${this.socket.id} sent ${message.recipientUsername} message: ${message}`);
 
     // Store message in DB
     const newMessage = await Message.create({
-      senderId: message.senderId,
-      roomId: message.roomId,
+      senderUsername: message.senderUsername,
+      recipientUsername: message.recipientUsername,
       content: message.content,
     });
 
     const messagePayloadJSON: string = JSON.stringify({ newMessage });
-    this.socket.to(message.roomId).emit('receive message', messagePayloadJSON);
+    this.socket.to(Users.get(message.recipientUsername)).emit('receive message', messagePayloadJSON);
   }
 
   privateRoomRequest(payloadJSON: unknown) {
