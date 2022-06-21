@@ -12,7 +12,7 @@ export const MessageType = RtRecord({
 
 export const MessageArray = RtArray(MessageType);
 
-export const SenderRecipientBody = RtRecord({
+export const SenderRecipientParams = RtRecord({
   senderUsername: RtString,
   recipientUsername: RtString,
 });
