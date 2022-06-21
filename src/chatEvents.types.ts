@@ -5,8 +5,8 @@ import {
 } from 'runtypes';
 
 const MessageType = RtRecord({
-  roomId: RtString,
-  senderId: RtString,
+  senderUsername: RtString,
+  recipientUsername: RtString,
   content: RtString,
 });
 
