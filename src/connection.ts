@@ -69,6 +69,7 @@ class Connection {
 
     const messagePayloadJSON: string = JSON.stringify({ message: newMessage });
     this.socket.to(Users.get(message.recipientUsername)).emit('receive message', messagePayloadJSON);
+    this.socket.emit('receive message', messagePayloadJSON);
   }
 
   privateRoomRequest(payloadJSON: unknown) {
