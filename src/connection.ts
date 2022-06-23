@@ -67,7 +67,7 @@ class Connection {
       content: message.content,
     });
 
-    const messagePayloadJSON: string = JSON.stringify({ newMessage });
+    const messagePayloadJSON: string = JSON.stringify({ message: newMessage });
     this.socket.to(Users.get(message.recipientUsername)).emit('receive message', messagePayloadJSON);
   }
 
