@@ -43,6 +43,7 @@ class Connection {
     socket.on('private room request', (payloadJSON: unknown) => this.privateRoomRequest(payloadJSON));
     socket.on('join room', (payloadJSON: unknown) => this.joinRoom(payloadJSON));
     socket.on('request refresh', (payloadJSON: unknown) => this.sendRequestRefresh(payloadJSON));
+    socket.on('contact refresh', (payloadJSON: unknown) => this.sendContactRefresh(payloadJSON));
     socket.on('disconnect', () => this.disconnect());
   }
 
@@ -106,6 +107,14 @@ class Connection {
     const id = Users.get(username);
     console.log(`Signaling ${username} (${id}) for pending requests `);
     this.socket.to(id).emit('request refresh');
+  }
+
+  sendContactRefresh(payloadJSON: unknown) {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { username } = RtRecord({ username: RtString }).check(payload);
+    const id = Users.get(username);
+    console.log(`Signaling ${username} (${id}) for new contacts `);
+    this.socket.to(id).emit('contact refresh');
   }
 
   disconnect() {
