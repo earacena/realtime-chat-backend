@@ -115,6 +115,7 @@ class Connection {
     const id = Users.get(username);
     console.log(`Signaling ${username} (${id}) for new contacts `);
     this.socket.to(id).emit('contact refresh');
+    this.socket.emit('contact refresh');
   }
 
   disconnect() {
