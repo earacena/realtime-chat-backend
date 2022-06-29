@@ -20,6 +20,8 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
     res.status(400).json({ error: 'model validation failed' }).end();
   } else if (err.name === 'SequelizeConnectionRefusedError') {
     res.status(503).json({ error: 'database connnection error' }).end();
+  } else if (err.name === 'SequelizeUniqueConstraintError') {
+    res.status(400).json({ error: 'Username already used, please try another.' }).end();
   } else if (err.name === 'JsonWebTokenError') {
     res.status(400).json({ error: 'malformed token' }).end();
   } else {
