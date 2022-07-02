@@ -1,10 +1,14 @@
 import { Server, Socket } from 'socket.io';
-import { Number as RtNumber, String as RtString, Record as RtRecord } from 'runtypes';
+import {
+  Static as RtStatic, Array as RtArray, Number as RtNumber, String as RtString, Record as RtRecord,
+} from 'runtypes';
 import { v4 } from 'uuid';
 import { verify as JwtVerify } from 'jsonwebtoken';
 import chatEvent from './chatEvents.types';
 import Message from './api/message/message.model';
 import { SECRET_JWT_KEY } from './config';
+import UserModel from './api/user/user.model';
+import { User as UserType, UserArray } from './api/user/user.types';
 
 const Users = new Map();
 
@@ -12,6 +16,8 @@ class Connection {
   socket: Socket;
 
   ioListener: Server;
+
+  userId: number;
 
   username: string;
 
@@ -23,13 +29,14 @@ class Connection {
       id: RtNumber,
       username: RtString,
     }).check(JwtVerify(token, SECRET_JWT_KEY));
+    this.userId = decoded.id;
     this.username = decoded.username;
     Users.set(this.username, this.socket.id);
 
     console.log('user connected: ', socket.id);
 
-    const userConnectedPayloadJSON: string = JSON.stringify({ userSocketId: socket.id });
-    this.socket.broadcast.emit('user connected', userConnectedPayloadJSON);
+    // const userConnectedPayloadJSON: string = JSON.stringify({ userSocketId: socket.id });
+    // this.socket.broadcast.emit('user connected', userConnectedPayloadJSON);
 
     // const allSockets = await io.fetchSockets();
     // const allSocketIds = allSockets.map((s) => s.id);
@@ -38,6 +45,7 @@ class Connection {
     // });
 
     // socket.emit('all connected users', allConnectedUsersPayloadJSON);
+    socket.on('signal online', () => this.signalOnlineToContacts());
     socket.on('receive all room messages', (payloadJSON: unknown) => this.receiveAllRoomMessages(payloadJSON));
     socket.on('send message', (payloadJSON: unknown) => this.sendMessage(payloadJSON));
     socket.on('private room request', (payloadJSON: unknown) => this.privateRoomRequest(payloadJSON));
@@ -45,6 +53,27 @@ class Connection {
     socket.on('request refresh', (payloadJSON: unknown) => this.sendRequestRefresh(payloadJSON));
     socket.on('contact refresh', (payloadJSON: unknown) => this.sendContactRefresh(payloadJSON));
     socket.on('disconnect', () => this.disconnect());
+  }
+
+  async signalOnlineToContacts() {
+    // retrieve contacts
+    const user = UserType.check(await UserModel.findByPk(this.userId));
+    const contactIds = user.contacts;
+    // make list of contact ids to usernames
+    const contacts = UserArray.check(
+      await Promise.all(contactIds.map((id) => UserModel.findByPk(id))),
+    );
+    // find users that are online from usernames
+    // send all those users a signal that user is online
+    contacts.forEach((contact) => {
+      if (contact && Users.has(contact.username)) {
+        const contactOnlinePayload: string = JSON.stringify({
+          id: this.userId,
+          username: this.username,
+        });
+        this.socket.to(Users.get(contact.username)).emit('contact online', contactOnlinePayload);
+      }
+    });
   }
 
   async receiveAllRoomMessages(payloadJSON: unknown) {
