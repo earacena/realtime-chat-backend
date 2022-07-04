@@ -3,6 +3,10 @@ import { NODE_ENV, DATABASE_URL } from '../config';
 
 let options = {};
 
+if (NODE_ENV === 'development') {
+  options = { logging: false };
+}
+
 if (NODE_ENV === 'production') {
   // Recommended for production database to use SSL
   options = {
