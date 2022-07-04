@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import {
-  Static as RtStatic, Array as RtArray, Number as RtNumber, String as RtString, Record as RtRecord,
+  Number as RtNumber, String as RtString, Record as RtRecord,
 } from 'runtypes';
 import { v4 } from 'uuid';
 import { verify as JwtVerify } from 'jsonwebtoken';
@@ -67,11 +67,12 @@ class Connection {
     // send all those users a signal that user is online
     contacts.forEach((contact) => {
       if (contact && Users.has(contact.username)) {
+        console.log(`signalling ${contact.username} (${Users.get(contact.username)})`);
         const contactOnlinePayload: string = JSON.stringify({
           id: this.userId,
           username: this.username,
         });
-        this.socket.to(Users.get(contact.username)).emit('contact online', contactOnlinePayload);
+        this.socket.to(Users.get(contact.username)).emit('signal online', contactOnlinePayload);
       }
     });
   }
