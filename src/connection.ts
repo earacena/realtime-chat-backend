@@ -93,7 +93,6 @@ class Connection {
         console.log(`signalling offline to ${contact.username} (${Users.get(contact.username)})`);
         const signalOfflinePayload: string = JSON.stringify({
           id: this.userId,
-          username: this.username,
         });
         this.socket.to(Users.get(contact.username)).emit('signal offline', signalOfflinePayload);
       }
