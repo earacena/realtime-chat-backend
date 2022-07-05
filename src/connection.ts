@@ -174,6 +174,7 @@ class Connection {
   disconnect() {
     console.log(`user disconnected ${this.socket.id}`);
 
+    this.signalOfflineToContacts();
     Users.delete(this.username);
 
     const userDisconnectedPayloadJSON: string = JSON.stringify({ userSocketId: this.socket.id });
