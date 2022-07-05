@@ -46,6 +46,7 @@ class Connection {
 
     // socket.emit('all connected users', allConnectedUsersPayloadJSON);
     socket.on('signal online', () => this.signalOnlineToContacts());
+    socket.on('signal offline', () => this.signalOfflineToContacts());
     socket.on('receive all room messages', (payloadJSON: unknown) => this.receiveAllRoomMessages(payloadJSON));
     socket.on('send message', (payloadJSON: unknown) => this.sendMessage(payloadJSON));
     socket.on('private room request', (payloadJSON: unknown) => this.privateRoomRequest(payloadJSON));
@@ -68,11 +69,33 @@ class Connection {
     contacts.forEach((contact) => {
       if (contact && Users.has(contact.username)) {
         console.log(`signalling ${contact.username} (${Users.get(contact.username)})`);
-        const contactOnlinePayload: string = JSON.stringify({
+        const signalOnlinePayload: string = JSON.stringify({
           id: this.userId,
           username: this.username,
         });
-        this.socket.to(Users.get(contact.username)).emit('signal online', contactOnlinePayload);
+        this.socket.to(Users.get(contact.username)).emit('signal online', signalOnlinePayload);
+      }
+    });
+  }
+
+  async signalOfflineToContacts() {
+    // retrieve contacts
+    const user = UserType.check(await UserModel.findByPk(this.userId));
+    const contactIds = user.contacts;
+    // make list of contact ids to usernames
+    const contacts = UserArray.check(
+      await Promise.all(contactIds.map((id) => UserModel.findByPk(id))),
+    );
+    // find users that are online from usernames
+    // send all those users a signal that user is online
+    contacts.forEach((contact) => {
+      if (contact && Users.has(contact.username)) {
+        console.log(`signalling offline to ${contact.username} (${Users.get(contact.username)})`);
+        const signalOfflinePayload: string = JSON.stringify({
+          id: this.userId,
+          username: this.username,
+        });
+        this.socket.to(Users.get(contact.username)).emit('signal offline', signalOfflinePayload);
       }
     });
   }
