@@ -47,6 +47,7 @@ class Connection {
     // socket.emit('all connected users', allConnectedUsersPayloadJSON);
     socket.on('signal online', () => this.signalOnlineToContacts());
     socket.on('signal offline', () => this.signalOfflineToContacts());
+    socket.on('signal online reply', (payloadJSON: unknown) => this.signalOnlineReply(payloadJSON));
     socket.on('receive all room messages', (payloadJSON: unknown) => this.receiveAllRoomMessages(payloadJSON));
     socket.on('send message', (payloadJSON: unknown) => this.sendMessage(payloadJSON));
     socket.on('private room request', (payloadJSON: unknown) => this.privateRoomRequest(payloadJSON));
@@ -68,7 +69,7 @@ class Connection {
     // send all those users a signal that user is online
     contacts.forEach((contact) => {
       if (contact && Users.has(contact.username)) {
-        console.log(`signalling ${contact.username} (${Users.get(contact.username)})`);
+        console.log(`signaling ${contact.username} (${Users.get(contact.username)})`);
         const signalOnlinePayload: string = JSON.stringify({
           id: this.userId,
           username: this.username,
@@ -76,6 +77,18 @@ class Connection {
         this.socket.to(Users.get(contact.username)).emit('signal online', signalOnlinePayload);
       }
     });
+  }
+
+  async signalOnlineReply(payloadJSON: unknown) {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { username } = chatEvent.SignalOnlineReplyPayload.check(payload);
+    const signalOnlinePayload: string = JSON.stringify({
+      id: this.userId,
+      username: this.username,
+    });
+
+    console.log(`signaling ${username} (${Users.get(username)})`);
+    this.socket.to(Users.get(username)).emit('signal online reply', signalOnlinePayload);
   }
 
   async signalOfflineToContacts() {
@@ -111,7 +124,7 @@ class Connection {
   async sendMessage(payloadJSON: unknown) {
     const payload: unknown = JSON.parse(RtString.check(payloadJSON));
     const { message } = chatEvent.MessagePayload.check(payload);
-    console.log(`${this.socket.id} sent ${message.recipientUsername} message: ${message}`);
+    console.log(`${this.socket.id} sent ${message.recipientUsername} message: ${JSON.stringify(message)}`);
 
     // Store message in DB
     const newMessage = await Message.create({
