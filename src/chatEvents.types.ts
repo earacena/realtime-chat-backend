@@ -1,4 +1,5 @@
 import {
+  Number as RtNumber,
   Record as RtRecord,
   String as RtString,
   Array as RtArray,
@@ -38,6 +39,11 @@ const ReceiveAllRoomMessagesPayload = RtRecord({
   roomId: RtString,
 });
 
+const SignalOnlineReplyPayload = RtRecord({
+  id: RtNumber,
+  username: RtString,
+});
+
 const chatEventType = {
   UserConnectedEventPayload,
   UserDisconnectedEventPayload,
@@ -46,6 +52,7 @@ const chatEventType = {
   MessagesPayload,
   PrivateRoomRequestPayload,
   ReceiveAllRoomMessagesPayload,
+  SignalOnlineReplyPayload,
 };
 
 export default chatEventType;
