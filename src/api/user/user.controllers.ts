@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
+import {
+  Record as RtRecord,
+  Number as RtNumber,
+} from 'runtypes';
 import User from './user.model';
 import {
   createUserRequest,
@@ -94,9 +98,32 @@ const getContactsController = async (
   }
 };
 
+const removeContactController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = IdParam.check({ id: req.params['id'] });
+    const { contactId } = RtRecord({ contactId: RtNumber }).check(req.body);
+
+    const { contacts } = UserType.check(await User.findByPk(id));
+    const results = await User.update(
+      { contacts: contacts.filter((c) => c !== contactId) },
+      { where: { id }, returning: true },
+    );
+
+    const updatedUser = UserType.check(results[1][0]);
+    res.status(200).json(updatedUser.contacts);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
 export default {
   createUserController,
   getUserDetailsController,
   addContactController,
   getContactsController,
+  removeContactController,
 };
