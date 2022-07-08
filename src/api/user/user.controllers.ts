@@ -107,10 +107,17 @@ const removeContactController = async (
     const { id } = IdParam.check({ id: req.params['id'] });
     const { contactId } = RtRecord({ contactId: RtNumber }).check(req.body);
 
-    const { contacts } = UserType.check(await User.findByPk(id));
-    const results = await User.update(
+    let { contacts } = UserType.check(await User.findByPk(id));
+    let results = await User.update(
       { contacts: contacts.filter((c) => c !== contactId) },
       { where: { id }, returning: true },
+    );
+
+    const user = UserType.check(await User.findByPk(contactId));
+    contacts = user.contacts;
+    results = await User.update(
+      { contacts: contacts.filter((c) => c.toString() !== id) },
+      { where: { id: contactId }, returning: true },
     );
 
     const updatedUser = UserType.check(results[1][0]);
