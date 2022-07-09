@@ -31,10 +31,23 @@ export const UserArray = RtArray(User);
 export type Users = RtStatic<typeof UserArray>;
 export const RtValidationError = RtInstanceOf(ValidationError);
 
+const DecodedToken = RtRecord({
+  token: RtString,
+  id: RtNumber,
+  name: RtString,
+  username: RtString,
+});
+
 export const IdParam = RtRecord({
   id: RtString,
 });
 
 export const AddContactRequest = RtRecord({
   contactId: RtNumber,
+  decodedToken: DecodedToken,
+});
+
+export const removeContactBody = RtRecord({
+  contactId: RtNumber,
+  decodedToken: DecodedToken,
 });
