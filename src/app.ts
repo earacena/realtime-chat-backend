@@ -9,7 +9,7 @@ import { verify as JwtVerify } from 'jsonwebtoken';
 // import Message from './api/message/message.model';
 import usersRouter from './api/user/user.routes';
 import loginRouter from './api/login/login.routes';
-import errorHandler from './middleware';
+import { errorHandler, authenticate } from './middleware';
 import { SECRET_JWT_KEY } from './config';
 import requestRouter from './api/request/request.routes';
 import messageRouter from './api/message/message.routes';
@@ -20,6 +20,7 @@ const app = express();
 // Pre-route middleware
 app.use(cors());
 app.use(express.json());
+app.use(authenticate);
 
 // Routes
 app.use('/api/users', usersRouter);
