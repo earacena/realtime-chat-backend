@@ -6,7 +6,8 @@ import {
   User as UserType,
   IdParam,
   AddContactRequest,
-  removeContactBody,
+  RemoveContactBody,
+  DecodedToken,
 } from './user.types';
 
 const createUserController = async (
@@ -97,6 +98,16 @@ const getContactsController = async (
   try {
     const { id } = IdParam.check({ id: req.params['id'] });
     const user = UserType.check(await User.findByPk(id));
+    const decodedToken = DecodedToken.check(req.body);
+
+    if (user.id !== decodedToken.id) {
+      res
+        .status(401)
+        .json('not authorized to do that')
+        .end();
+      return;
+    }
+
     res.status(200).json({ contacts: user.contacts });
   } catch (error: unknown) {
     next(error);
@@ -110,7 +121,7 @@ const removeContactController = async (
 ) => {
   try {
     const { id } = IdParam.check({ id: req.params['id'] });
-    const { decodedToken, contactId } = removeContactBody.check(req.body);
+    const { decodedToken, contactId } = RemoveContactBody.check(req.body);
     let user = UserType.check(await User.findByPk(id));
 
     if (decodedToken.id !== user.id) {
