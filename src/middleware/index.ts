@@ -1,3 +1,2 @@
-import errorHandler from './errorHandler.middleware';
-
-export default errorHandler;
+export { default as authenticate } from './authenticate.middleware';
+export { default as errorHandler } from './errorHandler.middleware';
