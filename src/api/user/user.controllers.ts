@@ -59,8 +59,16 @@ const addContactController = async (
 ) => {
   try {
     const { id } = IdParam.check({ id: req.params['id'] });
+    const { contactId, decodedToken } = AddContactRequest.check(req.body);
     const user = UserType.check(await User.findByPk(id));
-    const { contactId } = AddContactRequest.check(req.body);
+
+    if (user.id !== decodedToken.id) {
+      res
+        .status(401)
+        .json('not authorized to do that')
+        .end();
+      return;
+    }
 
     const { contacts } = user;
     if (!contacts.includes(contactId)) {
