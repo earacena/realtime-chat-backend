@@ -1,15 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
-import {
-  Record as RtRecord,
-  Number as RtNumber,
-} from 'runtypes';
 import User from './user.model';
 import {
   createUserRequest,
   User as UserType,
   IdParam,
   AddContactRequest,
+  removeContactBody,
 } from './user.types';
 
 const createUserController = async (
@@ -105,18 +102,26 @@ const removeContactController = async (
 ) => {
   try {
     const { id } = IdParam.check({ id: req.params['id'] });
-    const { contactId } = RtRecord({ contactId: RtNumber }).check(req.body);
+    const { decodedToken, contactId } = removeContactBody.check(req.body);
+    let user = UserType.check(await User.findByPk(id));
 
-    let { contacts } = UserType.check(await User.findByPk(id));
+    if (decodedToken.id !== user.id) {
+      res
+        .status(401)
+        .json('not authorized to do this')
+        .end();
+
+      return;
+    }
+
     let results = await User.update(
-      { contacts: contacts.filter((c) => c !== contactId) },
+      { contacts: user.contacts.filter((c) => c !== contactId) },
       { where: { id }, returning: true },
     );
 
-    const user = UserType.check(await User.findByPk(contactId));
-    contacts = user.contacts;
+    user = UserType.check(await User.findByPk(contactId));
     results = await User.update(
-      { contacts: contacts.filter((c) => c.toString() !== id) },
+      { contacts: user.contacts.filter((c) => c.toString() !== id) },
       { where: { id: contactId }, returning: true },
     );
 
