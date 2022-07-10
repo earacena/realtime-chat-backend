@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { MessageArray, SenderRecipientParams } from './message.types';
 import Message from './message.model';
+import { DecodedToken } from '../user/user.types';
 
 const getMessagesBySenderRecipientController = async (
   req: Request,
@@ -9,6 +10,15 @@ const getMessagesBySenderRecipientController = async (
 ) => {
   try {
     const { senderUsername, recipientUsername } = SenderRecipientParams.check(req.query);
+    const decodedToken = DecodedToken.check(req.body);
+
+    if (decodedToken.username !== senderUsername) {
+      res
+        .status(401)
+        .json('not authorized to do that')
+        .end();
+      return;
+    }
 
     // Get messages between two users
     const senderMessages = MessageArray.check(
