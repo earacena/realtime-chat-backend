@@ -10,7 +10,7 @@ const getMessagesBySenderRecipientController = async (
 ) => {
   try {
     const { senderUsername, recipientUsername } = SenderRecipientParams.check(req.query);
-    const decodedToken = DecodedToken.check(req.body);
+    const decodedToken = DecodedToken.check(req.body.decodedToken);
 
     if (decodedToken.username !== senderUsername) {
       res

@@ -98,7 +98,7 @@ const getContactsController = async (
   try {
     const { id } = IdParam.check({ id: req.params['id'] });
     const user = UserType.check(await User.findByPk(id));
-    const decodedToken = DecodedToken.check(req.body);
+    const decodedToken = DecodedToken.check(req.body.decodedToken);
 
     if (user.id !== decodedToken.id) {
       res
