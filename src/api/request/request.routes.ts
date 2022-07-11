@@ -1,5 +1,6 @@
 import express from 'express';
 import requestControllers from './request.controllers';
+import { auth } from '../../middleware';
 
 const {
   createRequestController,
@@ -9,8 +10,8 @@ const {
 
 const requestRouter = express.Router();
 
-requestRouter.post('/', createRequestController);
-requestRouter.get('/pending/to/:id', getPendingRequestsForUserId);
-requestRouter.put('/:id', updateRequestController);
+requestRouter.post('/', auth, createRequestController);
+requestRouter.get('/pending/to/:id', auth, getPendingRequestsForUserId);
+requestRouter.put('/:id', auth, updateRequestController);
 
 export default requestRouter;

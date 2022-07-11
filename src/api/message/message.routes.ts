@@ -1,5 +1,6 @@
 import express from 'express';
 import messageControllers from './message.controllers';
+import { auth } from '../../middleware';
 
 const {
   getMessagesBySenderRecipientController,
@@ -7,6 +8,6 @@ const {
 
 const messageRouter = express.Router();
 
-messageRouter.get('/', getMessagesBySenderRecipientController);
+messageRouter.get('/', auth, getMessagesBySenderRecipientController);
 
 export default messageRouter;
