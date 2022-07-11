@@ -7,8 +7,8 @@ import {
   IdParam,
   AddContactRequest,
   RemoveContactBody,
-  DecodedToken,
 } from './user.types';
+import { DecodedToken } from '../../app.types';
 
 const createUserController = async (
   req: Request,

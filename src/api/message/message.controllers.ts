@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { MessageArray, SenderRecipientParams } from './message.types';
 import Message from './message.model';
-import { DecodedToken } from '../user/user.types';
+import { DecodedToken } from '../../app.types';
 
 const getMessagesBySenderRecipientController = async (
   req: Request,
