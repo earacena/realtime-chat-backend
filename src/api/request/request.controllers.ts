@@ -4,10 +4,19 @@ import RequestModel from './request.model';
 import User from '../user/user.model';
 import { User as UserType } from '../user/user.types';
 import { CreateRequestBody, GetPendingRequestsParam, Request as RequestType } from './request.types';
+import { DecodedToken } from '../../app.types';
 
 const createRequestController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { type, toUser, fromUserId } = CreateRequestBody.check(req.body);
+    const decodedToken = DecodedToken.check(req.body.decodedToken);
+    if (decodedToken.id !== fromUserId) {
+      res
+        .status(401)
+        .json({ error: 'not authorized to do that' })
+        .end();
+      return;
+    }
 
     const user = UserType.check(await User.findOne({ where: { username: toUser } }));
 
@@ -32,6 +41,16 @@ const createRequestController = async (req: Request, res: Response, next: NextFu
 const getPendingRequestsForUserId = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = GetPendingRequestsParam.check({ id: req.params['id'] });
+    const decodedToken = DecodedToken.check(req.body.decodedToken);
+
+    if (decodedToken.id !== Number(id)) {
+      res
+        .status(401)
+        .json({ error: 'not authorized to do that' })
+        .end();
+      return;
+    }
+
     const requests = await RequestModel.findAll({ where: { toUser: id, status: 'pending' } });
 
     res
@@ -45,6 +64,15 @@ const getPendingRequestsForUserId = async (req: Request, res: Response, next: Ne
 const updateRequestController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = RtString.check(req.params['id']);
+    const decodedToken = DecodedToken.check(req.body.decodedToken);
+
+    if (decodedToken.id !== Number(id)) {
+      res
+        .status(401)
+        .json({ error: 'not authorized to do that' })
+        .end();
+      return;
+    }
     const request = RequestType.check(req.body);
     const { status } = request;
     const results = await RequestModel.update(
