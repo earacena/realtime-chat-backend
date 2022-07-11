@@ -15,7 +15,7 @@ const getMessagesBySenderRecipientController = async (
     if (decodedToken.username !== senderUsername) {
       res
         .status(401)
-        .json('not authorized to do that')
+        .json({ error: 'not authorized to do that' })
         .end();
       return;
     }

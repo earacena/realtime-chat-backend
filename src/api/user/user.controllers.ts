@@ -66,7 +66,7 @@ const addContactController = async (
     if (user.id !== decodedToken.id) {
       res
         .status(401)
-        .json('not authorized to do that')
+        .json({ error: 'not authorized to do that' })
         .end();
       return;
     }
@@ -103,7 +103,7 @@ const getContactsController = async (
     if (user.id !== decodedToken.id) {
       res
         .status(401)
-        .json('not authorized to do that')
+        .json({ error: 'not authorized to do that' })
         .end();
       return;
     }
@@ -127,7 +127,7 @@ const removeContactController = async (
     if (decodedToken.id !== user.id) {
       res
         .status(401)
-        .json('not authorized to do this')
+        .json({ error: 'not authorized to do this' })
         .end();
 
       return;
