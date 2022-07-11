@@ -8,6 +8,7 @@ import {
   InstanceOf as RtInstanceOf,
   ValidationError,
 } from 'runtypes';
+import { DecodedToken } from '../../app.types';
 
 export const User = RtRecord({
   id: RtNumber,
@@ -30,13 +31,6 @@ export const createUserRequest = RtRecord({
 export const UserArray = RtArray(User);
 export type Users = RtStatic<typeof UserArray>;
 export const RtValidationError = RtInstanceOf(ValidationError);
-
-export const DecodedToken = RtRecord({
-  token: RtString,
-  id: RtNumber,
-  name: RtString,
-  username: RtString,
-});
 
 export const IdParam = RtRecord({
   id: RtString,
