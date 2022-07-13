@@ -5,8 +5,6 @@ import {
 } from 'runtypes';
 
 export const DecodedToken = RtRecord({
-  token: RtString,
   id: RtNumber,
-  name: RtString,
   username: RtString,
 });
