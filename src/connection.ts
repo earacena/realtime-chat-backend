@@ -54,6 +54,7 @@ class Connection {
     socket.on('join room', (payloadJSON: unknown) => this.joinRoom(payloadJSON));
     socket.on('request refresh', (payloadJSON: unknown) => this.sendRequestRefresh(payloadJSON));
     socket.on('contact refresh', (payloadJSON: unknown) => this.sendContactRefresh(payloadJSON));
+    socket.on('contact request', (payloadJSON: unknown) => this.sendContactRequest(payloadJSON));
     socket.on('disconnect', () => this.disconnect());
   }
 
@@ -181,6 +182,16 @@ class Connection {
     console.log(`Signaling ${username} (${id}) for new contacts `);
     this.socket.to(id).emit('contact refresh');
     this.socket.emit('contact refresh');
+  }
+
+  sendContactRequest(payloadJSON: unknown) {
+    const payload: unknown = JSON.parse(RtString.check(payloadJSON));
+    const { id, username } = RtRecord({ id: RtNumber, username: RtString }).check(payload);
+    const socketId = Users.get(username);
+    console.log(`Signaling ${username} (${socketId}) to submit contact request `);
+
+    const contactRequestPayload: string = JSON.stringify({ id, username });
+    this.socket.to(socketId).emit('contact request', contactRequestPayload);
   }
 
   disconnect() {
