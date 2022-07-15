@@ -65,15 +65,15 @@ const updateRequestController = async (req: Request, res: Response, next: NextFu
   try {
     const id = RtString.check(req.params['id']);
     const decodedToken = DecodedToken.check(req.body.decodedToken);
+    const request = RequestType.check(req.body);
 
-    if (decodedToken.id !== Number(id)) {
+    if (decodedToken.id !== request.fromUser && decodedToken.id !== request.toUser) {
       res
         .status(401)
         .json({ error: 'not authorized to do that' })
         .end();
       return;
     }
-    const request = RequestType.check(req.body);
     const { status } = request;
     const results = await RequestModel.update(
       { status },
