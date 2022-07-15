@@ -186,11 +186,12 @@ class Connection {
 
   sendContactRequest(payloadJSON: unknown) {
     const payload: unknown = JSON.parse(RtString.check(payloadJSON));
-    const { id, username } = RtRecord({ id: RtNumber, username: RtString }).check(payload);
-    const socketId = Users.get(username);
-    console.log(`Signaling ${username} (${socketId}) to submit contact request `);
+    const { fromUser, toUser } = chatEvent.ContactRequestPayload.check(payload);
+    const socketId = Users.get(toUser.username);
 
-    const contactRequestPayload: string = JSON.stringify({ id, username });
+    console.log(`Signaling ${toUser.username} (${socketId}) to submit contact request `);
+
+    const contactRequestPayload: string = JSON.stringify({ fromUser, toUser });
     this.socket.to(socketId).emit('contact request', contactRequestPayload);
   }
 
