@@ -5,7 +5,7 @@ import {
 } from 'runtypes';
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
-  console.error(err);
+  // console.error(err);
 
   if (err.name === 'ValidationError' && RtInstanceOf(RtValidationError).guard(err)) {
     if (err.details && 'decodedToken' in err.details) {
