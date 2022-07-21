@@ -45,3 +45,9 @@ export const RemoveContactBody = RtRecord({
   contactId: RtNumber,
   decodedToken: DecodedToken,
 });
+
+export const UserDetails = RtRecord({
+  id: RtNumber,
+  name: RtString,
+  username: RtString,
+});
