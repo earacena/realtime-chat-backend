@@ -1,6 +1,10 @@
 import supertest from 'supertest';
 import { Request, Response, NextFunction } from 'express';
-import { Array as RtArray, Number as RtNumber, Record as RtRecord } from 'runtypes';
+import {
+  Array as RtArray,
+  Number as RtNumber,
+  Record as RtRecord,
+} from 'runtypes';
 import app from '../../app';
 import User from './user.model';
 import { User as UserType, UserDetails } from './user.types';
@@ -78,7 +82,9 @@ describe('User API', () => {
 
     test('successfully gets user contacts', async () => {
       const response = await api.get('/api/users/1/contacts').expect(200);
-      const { contacts } = RtRecord({ contacts: RtArray(RtNumber) }).check(JSON.parse(response.text));
+      const { contacts } = RtRecord({ contacts: RtArray(RtNumber) }).check(
+        JSON.parse(response.text),
+      );
       expect(contacts).toBeDefined();
       expect(contacts).toHaveLength(2);
       expect(contacts[1]).toBe(3);
@@ -107,16 +113,21 @@ describe('User API', () => {
   });
   describe('when adding', () => {
     test('successfully adds a contact', async () => {
-      (User.update as jest.Mock).mockResolvedValueOnce(['1', [{
-        id: 1,
-        name: 'Mocked User 1',
-        username: 'mockuser1',
-        // bcrypt hash for password 'testpassword'
-        passwordHash:
-          '$2b$10$PHEk/xaRipJTFbV76TW6X.RrZSc/xffBcuTfeKkPHNAgVeISBizsW',
-        dateRegistered: new Date(Date.now()).toDateString(),
-        contacts: [2, 3, 4],
-      }]]);
+      (User.update as jest.Mock).mockResolvedValueOnce([
+        '1',
+        [
+          {
+            id: 1,
+            name: 'Mocked User 1',
+            username: 'mockuser1',
+            // bcrypt hash for password 'testpassword'
+            passwordHash:
+              '$2b$10$PHEk/xaRipJTFbV76TW6X.RrZSc/xffBcuTfeKkPHNAgVeISBizsW',
+            dateRegistered: new Date(Date.now()).toDateString(),
+            contacts: [2, 3, 4],
+          },
+        ],
+      ]);
 
       const response = await api
         .put('/api/users/1/contacts')
