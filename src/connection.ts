@@ -35,16 +35,6 @@ class Connection {
 
     console.log('user connected: ', socket.id);
 
-    // const userConnectedPayloadJSON: string = JSON.stringify({ userSocketId: socket.id });
-    // this.socket.broadcast.emit('user connected', userConnectedPayloadJSON);
-
-    // const allSockets = await io.fetchSockets();
-    // const allSocketIds = allSockets.map((s) => s.id);
-    // const allConnectedUsersPayloadJSON: string = JSON.stringify({
-    //   allUserSocketIds: allSocketIds
-    // });
-
-    // socket.emit('all connected users', allConnectedUsersPayloadJSON);
     socket.on('signal online', () => this.signalOnlineToContacts());
     socket.on('signal offline', () => this.signalOfflineToContacts());
     socket.on('signal online reply', (payloadJSON: unknown) => this.signalOnlineReply(payloadJSON));
