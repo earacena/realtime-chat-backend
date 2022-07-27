@@ -1,5 +1,6 @@
 import supertest from 'supertest';
 import { Request, Response, NextFunction } from 'express';
+import { Array as RtArray } from 'runtypes';
 import app from '../../app';
 import RequestModel from './request.model';
 import User from '../user/user.model';
@@ -53,7 +54,7 @@ describe('Request API', () => {
 
     (User.findOne as jest.Mock).mockResolvedValue(mockedUsers[1]);
     (RequestModel.create as jest.Mock).mockResolvedValue(mockedRequests[0]);
-    (RequestModel.findAll as jest.Mock).mockResolvedValue(mockedRequests[0]);
+    (RequestModel.findAll as jest.Mock).mockResolvedValue(mockedRequests);
   });
 
   describe('when creating', () => {
@@ -79,7 +80,20 @@ describe('Request API', () => {
   });
 
   describe('when retrieving', () => {
-    test('successfully retrieves pending requests', () => {});
+    test('successfully retrieves pending requests', async () => {
+      const response = await api
+        .get('/api/requests/pending/to/1')
+        .set('Authorization', 'bearer token');
+
+      console.log(JSON.parse(response.text));
+      const requests = RtArray(RequestType).check(JSON.parse(response.text));
+
+      expect(requests).toBeDefined();
+      expect(requests).toHaveLength(1);
+      expect(requests[0]?.id).toBe(1);
+      expect(requests[0]?.status).toBe('pending');
+      expect(requests[0]?.fromUser).toBe(2);
+    });
   });
 
   describe('when updating', () => {
