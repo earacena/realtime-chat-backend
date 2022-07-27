@@ -21,37 +21,36 @@ jest.mock(
   },
 );
 describe('Request API', () => {
+  const mockedUsers = [
+    {
+      id: 1,
+      name: 'Mock User 1',
+      username: 'mockuser1',
+      passwordHash: 'password_hash',
+      dateRegistered: new Date(Date.now()).toDateString(),
+      contacts: [],
+    },
+    {
+      id: 2,
+      name: 'Mock User 2',
+      username: 'mockuser2',
+      passwordHash: 'password_hash',
+      dateRegistered: new Date(Date.now()).toDateString(),
+      contacts: [],
+    },
+  ];
+
+  const mockedRequests = [
+    {
+      id: 1,
+      type: 'contact',
+      dateRequested: new Date(Date.now()).toDateString(),
+      fromUser: 1,
+      toUser: 2,
+      status: 'pending',
+    },
+  ];
   beforeAll(() => {
-    const mockedUsers = [
-      {
-        id: 1,
-        name: 'Mock User 1',
-        username: 'mockuser1',
-        passwordHash: 'password_hash',
-        dateRegistered: new Date(Date.now()).toDateString(),
-        contacts: [],
-      },
-      {
-        id: 2,
-        name: 'Mock User 2',
-        username: 'mockuser2',
-        passwordHash: 'password_hash',
-        dateRegistered: new Date(Date.now()).toDateString(),
-        contacts: [],
-      },
-    ];
-
-    const mockedRequests = [
-      {
-        id: 1,
-        type: 'contact',
-        dateRequested: new Date(Date.now()).toDateString(),
-        fromUser: 2,
-        toUser: 1,
-        status: 'pending',
-      },
-    ];
-
     (User.findOne as jest.Mock).mockResolvedValue(mockedUsers[1]);
     (RequestModel.create as jest.Mock).mockResolvedValue(mockedRequests[0]);
     (RequestModel.findAll as jest.Mock).mockResolvedValue(mockedRequests);
@@ -74,8 +73,8 @@ describe('Request API', () => {
       expect(request.id).toBe(1);
       expect(request.type).toBe('contact');
       expect(request.status).toBe('pending');
-      expect(request.fromUser).toBe(2);
-      expect(request.toUser).toBe(1);
+      expect(request.fromUser).toBe(1);
+      expect(request.toUser).toBe(2);
     });
   });
 
@@ -85,19 +84,64 @@ describe('Request API', () => {
         .get('/api/requests/pending/to/1')
         .set('Authorization', 'bearer token');
 
-      console.log(JSON.parse(response.text));
       const requests = RtArray(RequestType).check(JSON.parse(response.text));
 
       expect(requests).toBeDefined();
       expect(requests).toHaveLength(1);
       expect(requests[0]?.id).toBe(1);
       expect(requests[0]?.status).toBe('pending');
-      expect(requests[0]?.fromUser).toBe(2);
+      expect(requests[0]?.fromUser).toBe(1);
     });
   });
 
   describe('when updating', () => {
-    test('successfully updates request status to "rejected"', () => {});
-    test('successfully creates a request to "accepted"', () => {});
+    test('successfully updates request status to "rejected"', async () => {
+      (RequestModel.update as jest.Mock).mockResolvedValueOnce([
+        '',
+        [{
+          ...mockedRequests[0],
+          status: 'rejected',
+        }]]);
+
+      const response = await api
+        .put('/api/requests/:id')
+        .send({
+          ...mockedRequests[0],
+          status: 'rejected',
+        });
+
+      const request = RequestType.check(JSON.parse(response.text));
+
+      expect(request).toBeDefined();
+      expect(request.id).toBe(1);
+      expect(request.type).toBe('contact');
+      expect(request.status).toBe('rejected');
+      expect(request.fromUser).toBe(1);
+      expect(request.toUser).toBe(2);
+    });
+    test('successfully creates a request to "accepted"', async () => {
+      (RequestModel.update as jest.Mock).mockResolvedValueOnce([
+        '',
+        [{
+          ...mockedRequests[0],
+          status: 'accepted',
+        }]]);
+
+      const response = await api
+        .put('/api/requests/:id')
+        .send({
+          ...mockedRequests[0],
+          status: 'accepted',
+        });
+
+      const request = RequestType.check(JSON.parse(response.text));
+
+      expect(request).toBeDefined();
+      expect(request.id).toBe(1);
+      expect(request.type).toBe('contact');
+      expect(request.status).toBe('accepted');
+      expect(request.fromUser).toBe(1);
+      expect(request.toUser).toBe(2);
+    });
   });
 });
