@@ -1,7 +1,7 @@
 # realtime-chat-backend
 
 ## Description
-A backend for a realtime chat web application written in Typescript.
+The backend for a realtime chat web application written in Typescript.
 
 ### Technologies
   * Typescript
