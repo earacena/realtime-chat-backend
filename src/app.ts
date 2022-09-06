@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
 
 const main = () => {
   server.listen(Number(PORT), () => {
-    console.log('socket.io listening on localhost:3001');
+    console.log(`listening on :${PORT}`);
   });
 };
 
