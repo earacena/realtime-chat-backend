@@ -3,6 +3,8 @@ import { String as RtString } from 'runtypes';
 
 const determineDatabaseUrl = (nodeEnv: string): string => {
   switch (nodeEnv) {
+    case 'production':
+      return RtString.check(process.env['DATABASE_URL']);
     case 'development':
       return RtString.check(process.env['DEV_DATABASE_URL']);
     case 'testing':
