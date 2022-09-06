@@ -18,7 +18,7 @@ import Connection from './connection';
 const app = express();
 
 // Pre-route middleware
-app.use(cors());
+app.use(cors({ origin: true }));
 app.use(express.json());
 
 // Routes
