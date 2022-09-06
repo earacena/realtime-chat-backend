@@ -10,7 +10,7 @@ import { verify as JwtVerify } from 'jsonwebtoken';
 import usersRouter from './api/user/user.routes';
 import loginRouter from './api/login/login.routes';
 import { errorHandler } from './middleware';
-import { PORT, SECRET_JWT_KEY } from './config';
+import { CORS_ORIGIN, PORT, SECRET_JWT_KEY } from './config';
 import requestRouter from './api/request/request.routes';
 import messageRouter from './api/message/message.routes';
 import Connection from './connection';
@@ -33,7 +33,7 @@ app.use(errorHandler);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost.localdomain:3000',
+    origin: `${CORS_ORIGIN}`,
   },
 });
 
