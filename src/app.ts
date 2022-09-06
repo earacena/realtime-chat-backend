@@ -10,7 +10,7 @@ import { verify as JwtVerify } from 'jsonwebtoken';
 import usersRouter from './api/user/user.routes';
 import loginRouter from './api/login/login.routes';
 import { errorHandler } from './middleware';
-import { SECRET_JWT_KEY } from './config';
+import { PORT, SECRET_JWT_KEY } from './config';
 import requestRouter from './api/request/request.routes';
 import messageRouter from './api/message/message.routes';
 import Connection from './connection';
@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
 });
 
 const main = () => {
-  server.listen(3001, () => {
+  server.listen(Number(PORT), () => {
     console.log('socket.io listening on localhost:3001');
   });
 };
