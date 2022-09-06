@@ -10,7 +10,7 @@ import { verify as JwtVerify } from 'jsonwebtoken';
 import usersRouter from './api/user/user.routes';
 import loginRouter from './api/login/login.routes';
 import { errorHandler } from './middleware';
-import { PORT, SECRET_JWT_KEY } from './config';
+import { NODE_ENV, PORT, SECRET_JWT_KEY } from './config';
 import requestRouter from './api/request/request.routes';
 import messageRouter from './api/message/message.routes';
 import Connection from './connection';
@@ -31,11 +31,17 @@ app.use('/api/messages', messageRouter);
 app.use(errorHandler);
 
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost.localdomain:3000',
-  },
-});
+let io: Server;
+
+if (NODE_ENV === 'production') {
+  io = new Server(server);
+} else {
+  io = new Server(server, {
+    cors: {
+      origin: 'http://localhost.localdomain:3000',
+    },
+  });
+}
 
 // Socketio middleware
 io.use((socket, next) => {
