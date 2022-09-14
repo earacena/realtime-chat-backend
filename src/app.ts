@@ -18,7 +18,7 @@ import Connection from './connection';
 const app = express();
 
 // Pre-route middleware
-app.use(cors({ origin: true }));
+app.use(cors());
 app.use(express.json());
 
 // Routes
@@ -49,7 +49,6 @@ io.use((socket, next) => {
 });
 
 // Socketio event handling
-
 io.on('connection', (socket) => {
   const connection = new Connection(io, socket);
   console.log(`user connected: ${connection.socket.id}`);
