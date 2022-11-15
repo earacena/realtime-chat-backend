@@ -1,4 +1,4 @@
-# realtime-chat-backend
+# Real-time Chat Web Application, Backend
 
 ## Description
 The backend for a realtime chat web application written in Typescript. Deployed live [here]()
